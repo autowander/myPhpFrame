@@ -1,11 +1,13 @@
 <?php
 namespace core;
+use Twig\Twig;
 
 class mpf{
-    public static $classMap = [];
+    private static $classMap = [];
     private $assign;
 
     public static function run(){
+        \core\lib\log::init();
         $route = new \core\lib\route();
         $ctrlClass = $route->ctrl.'Ctrl';               //控制器类名末加上 Ctrl
         $action = $route->action;
@@ -15,6 +17,7 @@ class mpf{
             include $ctrlfile;
             $ctrl = new $ctrlClass();
             $ctrl->$action();
+            \core\lib\log::log('controller:'.$ctrlClass.'&&action:'.$action);
         }else{
             throw new \Exception('找不到控制器: '.$ctrlClass);
         }
@@ -44,8 +47,13 @@ class mpf{
     public function display($file){
         $file = APP.'/view/'.$file;
         if(is_file($file)){
-            extract($this->assign);
-            include $file;
-        }
+            $loader = new \Twig_Loader_Filesystem(APP.'/view');
+            $twig = new \Twig_Environment($loader, array(
+                'cache' => MPF.'/log/twig',
+                'debug' => DEBUG
+            ));
+            $template = $twig->load('index.html');
+            $template->display($this->assign?$this->assign:'');
+        }   
     }
 }

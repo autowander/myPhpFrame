@@ -1,5 +1,6 @@
 <?php
 namespace core\lib;
+use core\lib\conf;
 
 class route{
     public function __construct(){
@@ -22,7 +23,7 @@ class route{
                 //返回函数名称
                 $this->action = $pathArr[1];
             }else{
-                $this->action = 'index';
+                $this->action = conf::get('ACTION', 'route');
             }
             unset($pathArr[1]);
             
@@ -36,8 +37,8 @@ class route{
             }
             
         }else{
-            $this->ctrl = 'index';
-            $this->action = 'index';
+            $this->ctrl = conf::get('CTRL', 'route');
+            $this->action = conf::get('ACTION', 'route');
         }
     }
 }
